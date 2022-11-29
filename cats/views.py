@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 
 from .models import Achievement, Cat, User
-
+from .permissions import OwnerOrReadOnly
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
 
 
@@ -15,7 +15,9 @@ class CatViewSet(viewsets.ModelViewSet):
     # добавляем к вьюсету новый аттрибут с кортежем пермишенов(разрешений)
     # после этого получить список котиков может даже анонимнеый пользователь,
     # но внести какие-либо изменения анонимный польз-ль не может
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    # после создания кастомного пермишн подключаем его  к нашему вьюсету
+    permission_classes = (OwnerOrReadOnly,)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
