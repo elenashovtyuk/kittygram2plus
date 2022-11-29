@@ -1,10 +1,11 @@
 from rest_framework import viewsets
 # from rest_framework import permissions
-from rest_framework.throttling import AnonRateThrottle
+from rest_framework.throttling import ScopedRateThrottle
 
 from .models import Achievement, Cat, User
 from .permissions import OwnerOrReadOnly, ReadOnly
 from .serializers import AchievementSerializer, CatSerializer, UserSerializer
+from .throttling import WorkingHoursRateThrottle
 
 
 class CatViewSet(viewsets.ModelViewSet):
@@ -19,7 +20,9 @@ class CatViewSet(viewsets.ModelViewSet):
 
     # после создания кастомного пермишн подключаем его  к нашему вьюсету
     permission_classes = (OwnerOrReadOnly,)
-    throttle_classes = (AnonRateThrottle,) # подключим класс для анонимных пользователей
+    throttle_classes = (WorkingHoursRateThrottle, ScopedRateThrottle)
+    # подключим класс для анонимных пользователей
+    throttle_scope = 'low_request'
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
