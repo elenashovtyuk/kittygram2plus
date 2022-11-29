@@ -25,6 +25,14 @@ class OwnerOrReadOnly(permissions.BasePermission):
 # CatViewSet работает с моделью Cat. Значит при проверке в методе
 # has_object_permission в obj будет передан объект этой модели
 # то есть, какой то конкретный котик.
-# Так как в этой модели есть поле owner, то при проверке будет проведено сравнение
-# - пользователя из запроса и содержимое этого поля
+# Так как в этой модели есть поле owner, то при проверке будет проведено
+# сравнение - пользователя из запроса и содержимое этого поля
 # теперь новый кастомный пермишн можно подключить к вьюсету CatViewSet
+
+
+# добавим еще один кастомный пермишн
+class ReadOnly(permissions.BasePermission):
+    # в нем переопределяем метод has_permission
+    # для определения разрешения на уровне запроса
+    def has_permission(self, request, view):
+        return request.method in permissions.SAFE_METHODS
